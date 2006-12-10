@@ -42,7 +42,6 @@ void TrayIcon::setIcon(const HICON hIcon)
 	ntd.uID = m_uid;
 	ntd.hIcon = hIcon;
 	ntd.uFlags = NIF_ICON;
-	ntd.uVersion = 0x500;
 
 	if (!m_added)
 	{
@@ -64,7 +63,6 @@ void TrayIcon::setToolTip(const char* toolTip)
 	ntd.cbSize = sizeof(NOTIFYICONDATA);
 	ntd.hWnd = m_hWnd;
 	ntd.uID = m_uid;
-	ntd.uVersion = 0x500;
 	ntd.uFlags = NIF_TIP;
 	memcpy(ntd.szTip, toolTip, strlen(toolTip));
 
@@ -78,10 +76,21 @@ void TrayIcon::remove()
 	ntd.cbSize = sizeof(NOTIFYICONDATA);
 	ntd.hWnd = m_hWnd;
 	ntd.uID = m_uid;
-	ntd.uVersion = 0x500;
 
 	Shell_NotifyIcon(NIM_DELETE, &ntd);
 	m_added = false;
+}
+
+void TrayIcon::setVersion(const unsigned int version)
+{
+	NOTIFYICONDATA ntd = {0};
+
+	ntd.cbSize = sizeof(NOTIFYICONDATA);
+	ntd.hWnd = m_hWnd;
+	ntd.uID = m_uid;
+	ntd.uVersion = 0x500;
+
+	Shell_NotifyIcon(NIM_SETVERSION, &ntd);
 }
 
 void TrayIcon::setInfo(const char* message, const char* title, const unsigned int timeout, const long icon)
@@ -91,7 +100,6 @@ void TrayIcon::setInfo(const char* message, const char* title, const unsigned in
 	ntd.cbSize = sizeof(NOTIFYICONDATA);
 	ntd.hWnd = m_hWnd;
 	ntd.uID = m_uid;
-	ntd.uVersion = 0x500;
 	ntd.uFlags = NIF_INFO;
 	ntd.uTimeout = timeout;
 	memcpy(ntd.szInfo, message, strlen(message));

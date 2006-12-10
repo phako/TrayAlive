@@ -229,7 +229,7 @@ void CPing::pingThread()
 
 	while (!bLeave)
 	{
-		lResult = WaitForSingleObject(m_hEvent, 1000);
+		lResult = WaitForSingleObject(m_hEvent, m_uSleep);
 		switch (lResult)
 		{
 		case WAIT_TIMEOUT:

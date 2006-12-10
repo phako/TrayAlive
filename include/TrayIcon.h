@@ -55,6 +55,8 @@ class TrayIcon
 		 */
 		void remove();
 
+		void setVersion(const unsigned int version = 0x500);
+
 		/**
 		 * Show a balloon help message.
 		 *

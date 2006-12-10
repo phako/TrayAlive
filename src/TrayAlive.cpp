@@ -31,8 +31,6 @@
 #include "Ping.h"
 #include "TrayIcon.h"
 
-const unsigned int uID = 1862347973;
-
 CPing* ping;
 HINSTANCE myInstance;
 HICON m_hIconUp;
@@ -167,6 +165,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	trayIcon = new TrayIcon(hWnd, WM_USER + 0x5000);
 
 	trayIcon->setIcon(m_hIconUp);
+	trayIcon->setVersion();
 
 	ping = new CPing(hWnd, lpCmdLine, true);
 
