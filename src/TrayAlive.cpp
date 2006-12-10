@@ -29,6 +29,7 @@
 
 #include "NotifyWindowClass.h"
 #include "Ping.h"
+#include "TrayIcon.h"
 
 const unsigned int uID = 1862347973;
 
@@ -38,6 +39,7 @@ HICON m_hIconUp;
 HICON m_hIconDown;
 char pszToolTip[255] = {0};
 HMENU hSubMenu;
+TrayIcon* trayIcon;
 
 LRESULT CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -61,9 +63,7 @@ LRESULT CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 LRESULT CALLBACK MyWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	char buf[255] = {0};
-	NOTIFYICONDATA ntd = {0};
 	int num;
-	BOOL res;
 
 	switch (msg)
 	{
@@ -73,10 +73,7 @@ LRESULT CALLBACK MyWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case ID_TRAYMENU_QUIT:
 			// end program;
 			ping->stop();
-			ntd.cbSize = sizeof(NOTIFYICONDATA);
-			ntd.hWnd = hWnd;
-			ntd.uID = uID;
-			Shell_NotifyIcon(NIM_DELETE, &ntd);
+			trayIcon->remove();
 			DestroyWindow(hWnd);
 			return 0;
 		case ID_TRAYMENU_PINGHOST:
@@ -100,24 +97,13 @@ LRESULT CALLBACK MyWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 	case CPing::PING_HOST_UP:
 	case CPing::PING_HOST_DOWN:
-		ntd.cbSize = sizeof(NOTIFYICONDATA);
-		ntd.hWnd = hWnd;
-		ntd.uID = uID;
+		trayIcon->setIcon(msg == CPing::PING_HOST_UP ? m_hIconUp : m_hIconDown);
 		num = sprintf(buf, "Host \"%s\" is %s", ((CPing*)wParam)->getHostName(), msg == CPing::PING_HOST_UP ? "up" : "down");
-		ntd.hIcon = msg == CPing::PING_HOST_UP ? m_hIconUp : m_hIconDown;
-		strncpy(ntd.szInfo, buf, num);
-		ntd.uFlags = NIF_ICON | NIF_INFO;
-		ntd.uTimeout = 10000;
-		ntd.uVersion = 0x500;
-
-		res = Shell_NotifyIcon(NIM_MODIFY, &ntd);
+		trayIcon->setInfo(buf);
 		return 0;
 	case WM_USER + 0x5000:
 		switch (LOWORD(lParam))
 		{
-		case WM_LBUTTONUP:
-			ping->stop();
-			break;
 		case WM_RBUTTONUP:
 			POINT pos;
 			GetCursorPos(&pos);
@@ -150,7 +136,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	HWND hWnd;
 	int bRet;
 	MSG msg;
-	NOTIFYICONDATA ntd = {0};
 
 	myInstance = hInstance;
 
@@ -179,19 +164,14 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	hSubMenu = GetSubMenu(hMenu, 0);
 	SetMenuDefaultItem(hSubMenu, ID_TRAYMENU_QUIT, FALSE);
 
-	ntd.cbSize = sizeof(NOTIFYICONDATA);
-	ntd.hWnd = hWnd;
-	ntd.hIcon = m_hIconUp;
-	ntd.uID = uID;
-	ntd.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
-	ntd.uCallbackMessage = WM_USER + 0x5000;
-	ntd.uVersion = 0x500;
+	trayIcon = new TrayIcon(hWnd, WM_USER + 0x5000);
 
-	num = sprintf(pszToolTip, "TrayAlive for host %s", lpCmdLine);
-	strncpy(ntd.szTip, pszToolTip, num);
-	Shell_NotifyIcon(NIM_ADD, &ntd);
+	trayIcon->setIcon(m_hIconUp);
 
-	ping = new CPing(hWnd, lpCmdLine, 32, 3000, 4, false);
+	ping = new CPing(hWnd, lpCmdLine, true);
+
+	num = sprintf(pszToolTip, "TrayAlive for host %s", ping->getHostName());
+	trayIcon->setToolTip(pszToolTip);
 	ping->start();
 
 	while ((bRet = GetMessage(&msg, NULL, 0, 0)) != 0)
@@ -211,6 +191,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	WSACleanup();
 	return 0;
 }
+
 
 
 

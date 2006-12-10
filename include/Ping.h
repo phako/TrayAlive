@@ -112,12 +112,6 @@ private:
 	void createSocket();
 
 	/**
-	 * prepare an ICMP_ECHO message
-	 */
-	void prepareMessage();
-
-
-	/**
 	 * destination address
 	 */
 	sockaddr_in m_saDest;
@@ -183,9 +177,6 @@ private:
 	 */
 	unsigned int m_uFailedPings;
 
-	/// ICMP data for request
-	char* m_pBuffer;
-
 	/// reply buffer for ICMP_ECHO
 	char* m_pReplyBuffer;
 
@@ -200,3 +191,4 @@ private:
 };
 
 #endif // #ifndef _PING_H
+

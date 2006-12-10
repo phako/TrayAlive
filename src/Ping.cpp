@@ -28,39 +28,10 @@
 #include <string>
 #include <iostream>
 
+#include "IcmpPacket.h"
+#include "IpPacket.h"
 #include "PingException.h"
 #include "Ping.h"
-
-const unsigned long int cg_ulDataBytes = 0xCAFEBABE;
-const BYTE cg_ICMP_TYPE_ECHO_REQUEST = 8;
-const BYTE cg_ulICMP_ECHO_REPLY = 0;
-
-#pragma pack(1)
-
-struct icmp_header 
-{
-	BYTE type;
-	BYTE code;
-	USHORT checksum;
-	USHORT id;
-	USHORT seq;
-	ULONG timestamp;
-};
-
-struct ip_header
-{
-	BYTE h_len:4;
-	BYTE version:4;
-	BYTE tos;
-	USHORT total_length;
-	USHORT ident;
-	USHORT flags;
-	BYTE ttl;
-	BYTE proto;
-	USHORT checksum;
-	ULONG source_ip;
-	ULONG dest_ip;
-};
 
 CPing::CPing(
 		const HWND hMessageWindow,
@@ -71,24 +42,20 @@ CPing::CPing(
 		const unsigned int c_uUnreachableThreshold,
 		const unsigned int c_lBufferSize, 
 		const unsigned int c_uTtl) :
-m_hMessageWindow(hMessageWindow),
+m_ulInetAddr(0L),
 m_pszHost(NULL),
 m_uBufferSize(c_lBufferSize),
 m_uTtl(c_uTtl),
 m_uUnreachableThreshold(c_uUnreachableThreshold),
-m_ulInetAddr(0L),
+m_uTimeout(c_uTimeout),
+m_hMessageWindow(hMessageWindow),
 m_bDownSignalled(false),
 m_uFailedPings(0),
-m_uTimeout(c_uTimeout),
 m_uSleep(c_uSleep),
-m_sd(INVALID_SOCKET),
-m_uSequenceNumber(0)
+m_uSequenceNumber(0),
+m_sd(INVALID_SOCKET)
 {
 	struct hostent* pHostInfo = NULL;
-	in_addr in = {0};
-	int nResult = 0;
-
-	m_uBufferSize -= sizeof(icmp_header);
 
 	// try to convert the host address into a inet address
 	m_ulInetAddr = inet_addr(c_pszHost);
@@ -143,13 +110,8 @@ m_uSequenceNumber(0)
 
 	m_hEvent = CreateEvent(NULL, TRUE, FALSE, "PingCancel event");
 
-	// create random buffer
-	m_pBuffer = new char[m_uBufferSize + sizeof(icmp_header)];
-	memset(m_pBuffer, 0, m_uBufferSize + sizeof(icmp_header));
-
-	long lBuflen = sizeof(ip_header) + 1024;
-	m_pReplyBuffer = (char *) malloc(lBuflen);
-	memset(m_pReplyBuffer, 0, lBuflen);
+	m_pReplyBuffer = new char[IpPacket::MAX_PACKET_SIZE];
+	memset(m_pReplyBuffer, 0, IpPacket::MAX_PACKET_SIZE);
 }
 
 void CPing::start()
@@ -225,7 +187,6 @@ CPing::~CPing()
 	CloseHandle(m_hEvent);
 
 	delete [] m_pReplyBuffer;
-	delete [] m_pBuffer;
 
 	// free host name
 	if (m_pszHost != NULL)
@@ -302,51 +263,6 @@ void CPing::pingThread()
 	m_uSequenceNumber = 0;
 }
 
-void CPing::prepareMessage()
-{
-	int nBytesLeft = m_uBufferSize;
-	unsigned long checksum = 0L;
-	int count;
-
-	icmp_header* pHeader = (icmp_header *) m_pBuffer;
-
-	pHeader->type = cg_ICMP_TYPE_ECHO_REQUEST;
-	pHeader->code = 0;
-	pHeader->checksum = 0;
-	pHeader->id = (USHORT)GetCurrentProcessId();
-	pHeader->seq = htons(++m_uSequenceNumber);
-	pHeader->timestamp = GetTickCount();
-
-	// fill up packet with a little java ;)
-	char* pos = (char *)(pHeader);
-	pos += sizeof(icmp_header);
-	while (nBytesLeft > 0)
-	{
-		memcpy(pos, (const char*)&cg_ulDataBytes, std::min((int)sizeof(cg_ulDataBytes), nBytesLeft));
-		nBytesLeft -= sizeof(cg_ulDataBytes);
-		pos += sizeof(cg_ulDataBytes);
-	}
-
-	USHORT* buf = (USHORT *)pHeader;
-	count = m_uBufferSize + sizeof(icmp_header);
-	while (count > 1)
-	{
-		checksum += *buf;
-		buf++;
-		count -= sizeof(USHORT);
-	}
-
-	if (count > 0)
-	{
-		checksum += *buf;
-	}
-
-	checksum = (checksum & 0xffff) + (checksum >> 16);
-	//checksum = (checksum >> 16);
-
-	pHeader->checksum = ~checksum;
-}
-
 bool CPing::ping()
 {
 	int nResult = SOCKET_ERROR;
@@ -357,16 +273,17 @@ bool CPing::ping()
 	FD_ZERO(&fds);
 	FD_SET(m_sd, &fds);
 	sockaddr_in sa;
-	ip_header* pIpHeader;
-	icmp_header* pIcmpHeader;
+	//ip_header* pIpHeader;
+	IcmpPacket* response = NULL;
+	IpPacket* responsePacket = NULL;
 
 	// copy dest address, routers overwrite it on DEST_UNREACHABLE
 	memcpy(&sa, &m_saDest, sizeof(m_saDest));
 
-	prepareMessage();
+	IcmpPacket packet(GetCurrentProcessId(), ++m_uSequenceNumber, m_uBufferSize);
 
 	nResult = sendto(m_sd, 
-		m_pBuffer, m_uBufferSize + sizeof(icmp_header), 0, 
+		packet.rawData(), packet.getSize(), 0, 
 		(const sockaddr *)&m_saDest, sizeof(m_saDest));
 
 	if (SOCKET_ERROR == nResult)
@@ -388,7 +305,7 @@ bool CPing::ping()
 
 		int size = sizeof(m_saDest);
 		nResult = recvfrom(m_sd, 
-			(char *)m_pReplyBuffer, 1024 + sizeof(ip_header), 0,
+			(char *)m_pReplyBuffer, IpPacket::MAX_PACKET_SIZE, 0,
 			(sockaddr *)&sa, &size);
 
 		OutputDebugString("After recvfrom\r\n");
@@ -398,27 +315,41 @@ bool CPing::ping()
 			return false;
 		}
 
-		pIpHeader = (ip_header *) m_pReplyBuffer;
-		pIcmpHeader = (icmp_header *) (m_pReplyBuffer + pIpHeader->h_len * 4);
+		if (responsePacket != NULL)
+		{
+			delete responsePacket;
+		}
+
+		responsePacket = new IpPacket(m_pReplyBuffer, nResult);
+
+		//pIpHeader = (ip_header *) m_pReplyBuffer;
+		if (response != NULL)
+		{
+			delete response;
+		}
+		//response = new IcmpPacket((m_pReplyBuffer + pIpHeader->h_len * 4), pIpHeader->total_length - (pIpHeader->h_len * 4));
+		response = new IcmpPacket(responsePacket->getPayload(), responsePacket->getPayloadSize());
 
 		// check sequence number
 	}
-	while (ntohs(pIcmpHeader->seq) != m_uSequenceNumber);
-
-	char *data = (char *)(pIcmpHeader + sizeof(icmp_header));
+	while (response->getSequenceNumber() != m_uSequenceNumber);
 
 	// check length
-	if (pIcmpHeader->type != cg_ulICMP_ECHO_REPLY)
+	if (response->getType() != IcmpPacket::ICMP_TYPE_ECHO_REPLY)
 	{
+		delete response;
 		OutputDebugString("Answer is not ECHO_REPLY");
 		return false;
 	}
 
-	if (pIcmpHeader->id != GetCurrentProcessId())
+	if (response->getId() != GetCurrentProcessId())
 	{
+		delete response;
 		OutputDebugString("Answer is not for us");
 		return false;
 	}
+
+	delete response;
 	return true;
 }
 
@@ -431,3 +362,4 @@ void CPing::fireDown()
 {
 	::PostMessage(m_hMessageWindow, CPing::PING_HOST_DOWN, (LPARAM)this, 0);
 }
+
