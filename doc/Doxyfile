@@ -4,8 +4,8 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = TrayAlive
-PROJECT_NUMBER         = 0.1
-OUTPUT_DIRECTORY       = /home/jens/Source/TrayAlive-refactor/doc/
+PROJECT_NUMBER         = 0.2
+OUTPUT_DIRECTORY       = doc/
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
 USE_WINDOWS_ENCODING   = NO
@@ -28,7 +28,7 @@ FULL_PATH_NAMES        = YES
 STRIP_FROM_PATH        = /home/jens/Source/TrayAlive-refactor/doc/
 STRIP_FROM_INC_PATH    = 
 SHORT_NAMES            = NO
-JAVADOC_AUTOBRIEF      = NO
+JAVADOC_AUTOBRIEF      = YES
 MULTILINE_CPP_IS_BRIEF = NO
 DETAILS_AT_TOP         = NO
 INHERIT_DOCS           = YES
@@ -82,8 +82,8 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = /home/jens/Source/TrayAlive-refactor/src/ \
-                         /home/jens/Source/TrayAlive-refactor/include/
+INPUT                  = src/ \
+                         include/
 FILE_PATTERNS          = *.c \
                          *.cc \
                          *.cxx \
