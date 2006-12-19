@@ -33,6 +33,11 @@
 #include "PingException.h"
 #include "Ping.h"
 
+////////////////////////////////////////////////////////////////////////////////////
+// Static members
+// 
+const unsigned int CPing::WM_PING_TASKBAR_CREATED = ::RegisterWindowMessage(TEXT("TaskbarCreated"));
+
 CPing::CPing(
 		const HWND hMessageWindow,
 		const char* c_pszHost,

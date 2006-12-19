@@ -29,7 +29,10 @@ public:
 	 * Custom windows messages
 	 */
 	enum {
+		/// Signal to the listening window that the host is up
 		PING_HOST_UP = WM_USER + 0x8000,
+
+		/// Signal to the listening window that the host is down
 		PING_HOST_DOWN,
 	};
 	/**
@@ -67,13 +70,30 @@ public:
 	 */
 	void stop();
 
+	/**
+	 * Return the name of the host. 
+	 * 
+	 * @return the host name if Ping was created with name resolution, 
+	 * a string representation of the IP address otherwise.
+	 */
 	const char* getHostName() const { return m_pszHost; };
+
+	/**
+	 * Return the current status of the pinged host.
+	 *
+	 * @return false, if the host is down, true, if the host is up (or less than threshold 
+	 * packets have not been answered.
+	 */
+	const bool isUp() { return !m_bDownSignalled; };
 
 	/**
 	 * Static member function used for _beginthreadex. The member will lookup if its parameter
 	 * is a valid instance of CPing and will then call pInstance->pingThread().
 	 */
 	static unsigned int __stdcall threadFunc(void *pInstance);
+
+	/// window message issued to listener when taskbar is (re-)created, for example after a crash.
+	const static unsigned int WM_PING_TASKBAR_CREATED;
 
 private:
 	/**

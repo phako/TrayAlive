@@ -3,6 +3,7 @@ CXX=i586-mingw32msvc-g++
 LD=i586-mingw32msvc-ld
 RES=i586-mingw32msvc-windres
 CXXFLAGS=-Wall -Werror -g -I include
+DOXYGEN=doxygen
 
 OBJECTS=bin/TrayAlive.o \
 		bin/IpPacket.o \
@@ -13,6 +14,9 @@ OBJECTS=bin/TrayAlive.o \
 		bin/TrayAliveResources.o
 
 all: TrayAlive.exe
+
+doc:
+	$(DOXYGEN) doc/Doxyfile
 
 distrib: TrayAlive.exe InstallTrayAlive.exe
 
@@ -46,3 +50,4 @@ bin/TrayIcon.o: src/TrayIcon.cpp include/TrayIcon.h
 clean:
 	rm -rf bin/*
 
+.PHONY: doc

@@ -63,6 +63,12 @@ LRESULT CALLBACK MyWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	char buf[255] = {0};
 	int num;
 
+	if (msg == CPing::WM_PING_TASKBAR_CREATED)
+	{
+		trayIcon->setIcon(ping->isUp() ? m_hIconUp : m_hIconDown);
+		return 0;
+	}
+
 	switch (msg)
 	{
 	case WM_COMMAND:
@@ -86,7 +92,7 @@ LRESULT CALLBACK MyWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				num = CheckMenuItem(hSubMenu, ID_TRAYMENU_PINGHOST, MF_BYCOMMAND | MF_CHECKED);
 			default:
 				break;
-			}
+			} 
 			return 0;
 		case ID_TRAYMENU_ABOUT:
 			DialogBox(myInstance, (LPCTSTR)IDD_ABOUT, hWnd, (DLGPROC)About);
