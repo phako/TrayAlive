@@ -193,7 +193,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	{
 		trayIcon->setIcon(m_hIconUp);
 		OutputDebugString("Set icon");
-		trayIcon->setVersion();
+		trayIcon->setVersion(NOTIFYICON_VERSION);
 		OutputDebugString("Set version");
 		ping = new CPing(hWnd, lpCmdLine, true);
 

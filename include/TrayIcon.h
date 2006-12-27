@@ -62,9 +62,9 @@ class TrayIcon
 		 * set the version of the tray notification behaviour. Defaults
 		 * to W2k.
 		 *
-		 * @param version the version to set. Defaults to 0x500 (W2k)
+		 * @param version the version to set.
 		 */
-		void setVersion(const unsigned int version = 0x500) throw(TrayIconException);
+		void setVersion(const unsigned int version) throw(TrayIconException);
 
 		/**
 		 * Show a balloon help message.
