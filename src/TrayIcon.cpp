@@ -17,9 +17,16 @@
 */
 #include <string>
 
+#include "TrayIconException.h"
 #include "TrayIcon.h"
 
-TrayIcon::TrayIcon(const HWND hWnd, const unsigned int callbackMessage) :
+
+////////////////////////////////////////////////////////////////////////////////
+// Static members
+// 
+const unsigned int TrayIcon::WM_PING_TASKBAR_CREATED = ::RegisterWindowMessage(TEXT("TaskbarCreated"));
+
+TrayIcon::TrayIcon(const HWND hWnd, const unsigned int callbackMessage):
 	m_uid(0),
 	m_hWnd(hWnd),
 	m_callbackMessage(callbackMessage),
@@ -30,11 +37,15 @@ TrayIcon::TrayIcon(const HWND hWnd, const unsigned int callbackMessage) :
 
 TrayIcon::~TrayIcon()
 {
-	remove();
+	if (m_added)
+	{
+		remove();
+	}
 }
 
-void TrayIcon::setIcon(const HICON hIcon)
+void TrayIcon::setIcon(const HICON hIcon) throw(TrayIconException)
 {
+	BOOL res = FALSE;
 	NOTIFYICONDATA ntd = {0};
 
 	ntd.cbSize = sizeof(NOTIFYICONDATA);
@@ -47,18 +58,27 @@ void TrayIcon::setIcon(const HICON hIcon)
 	{
 		ntd.uFlags |= NIF_MESSAGE;
 		ntd.uCallbackMessage = m_callbackMessage;
-		Shell_NotifyIcon(NIM_ADD, &ntd);
-		m_added = true;
+		res = Shell_NotifyIcon(NIM_ADD, &ntd);
 	}
 	else
 	{
-		Shell_NotifyIcon(NIM_MODIFY, &ntd);
+		res = Shell_NotifyIcon(NIM_MODIFY, &ntd);
+	}
+
+	if (FALSE == res)
+	{
+		throw TrayIconException("Adding the tray icon failed");
+	}
+	else
+	{
+		m_added = true;
 	}
 }
 
-void TrayIcon::setToolTip(const char* toolTip)
+void TrayIcon::setToolTip(const char* toolTip) throw(TrayIconException)
 {
 	NOTIFYICONDATA ntd = {0};
+	BOOL res = FALSE;
 
 	ntd.cbSize = sizeof(NOTIFYICONDATA);
 	ntd.hWnd = m_hWnd;
@@ -66,36 +86,54 @@ void TrayIcon::setToolTip(const char* toolTip)
 	ntd.uFlags = NIF_TIP;
 	memcpy(ntd.szTip, toolTip, strlen(toolTip));
 
-	Shell_NotifyIcon(NIM_MODIFY, &ntd);
+	res = Shell_NotifyIcon(NIM_MODIFY, &ntd);
+	if (FALSE == res)
+	{
+		throw TrayIconException("Failed to set the tool tip");
+	}
 }
 
-void TrayIcon::remove()
+void TrayIcon::remove() throw(TrayIconException)
 {
 	NOTIFYICONDATA ntd = {0};
+	BOOL res = FALSE;
 
 	ntd.cbSize = sizeof(NOTIFYICONDATA);
 	ntd.hWnd = m_hWnd;
 	ntd.uID = m_uid;
 
-	Shell_NotifyIcon(NIM_DELETE, &ntd);
-	m_added = false;
+	res = Shell_NotifyIcon(NIM_DELETE, &ntd);
+	if (FALSE == res)
+	{
+		throw TrayIconException("Failed to remove the icon");
+	}
+	else
+	{
+		m_added = false;
+	}
 }
 
-void TrayIcon::setVersion(const unsigned int version)
+void TrayIcon::setVersion(const unsigned int version) throw(TrayIconException)
 {
 	NOTIFYICONDATA ntd = {0};
+	BOOL res = FALSE;
 
 	ntd.cbSize = sizeof(NOTIFYICONDATA);
 	ntd.hWnd = m_hWnd;
 	ntd.uID = m_uid;
-	ntd.uVersion = 0x500;
+	ntd.uVersion = version;
 
-	Shell_NotifyIcon(NIM_SETVERSION, &ntd);
+	res = Shell_NotifyIcon(NIM_SETVERSION, &ntd);
+	if (FALSE == res)
+	{
+		throw TrayIconException("Failed to set the version");
+	}
 }
 
-void TrayIcon::setInfo(const char* message, const char* title, const unsigned int timeout, const long icon)
+void TrayIcon::setInfo(const char* message, const char* title, const unsigned int timeout, const long icon) throw(TrayIconException)
 {
 	NOTIFYICONDATA ntd = {0};
+	BOOL res = FALSE;
 
 	ntd.cbSize = sizeof(NOTIFYICONDATA);
 	ntd.hWnd = m_hWnd;
@@ -106,5 +144,9 @@ void TrayIcon::setInfo(const char* message, const char* title, const unsigned in
 	memcpy(ntd.szInfoTitle, title, strlen(title));
 	ntd.dwInfoFlags = icon;
 
-	Shell_NotifyIcon(NIM_MODIFY, &ntd);
+	res = Shell_NotifyIcon(NIM_MODIFY, &ntd);
+	if (FALSE == res)
+	{
+		throw TrayIconException("Failed to set a balloon tool tip");
+	}
 }

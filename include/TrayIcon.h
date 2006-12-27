@@ -19,6 +19,9 @@
 
 #include <windows.h>
 #include <shellapi.h>
+
+#include "TrayIconException.h"
+
 class TrayIcon 
 {
 	public:
@@ -41,21 +44,27 @@ class TrayIcon
 		 *
 		 * @param hIcon handle to new icon
 		 */
-		void setIcon(const HICON hIcon);
+		void setIcon(const HICON hIcon) throw(TrayIconException);
 
 		/**
 		 * Set the tool tip of the tray icon. To show a balloon tip, use
 		 * setInfo()
 		 *
 		 * @param toolTip tool tip of notification icon*/
-		void setToolTip(const char* toolTip);
+		void setToolTip(const char* toolTip) throw(TrayIconException);
 
 		/**
 		 * removes icon from tray.
 		 */
-		void remove();
+		void remove() throw(TrayIconException);
 
-		void setVersion(const unsigned int version = 0x500);
+		/**
+		 * set the version of the tray notification behaviour. Defaults
+		 * to W2k.
+		 *
+		 * @param version the version to set. Defaults to 0x500 (W2k)
+		 */
+		void setVersion(const unsigned int version = 0x500) throw(TrayIconException);
 
 		/**
 		 * Show a balloon help message.
@@ -67,7 +76,10 @@ class TrayIcon
 		 * @param icon the icon to show in the dialog.
 		 */
 		void setInfo(const char* message, const char* title = "",
-				const unsigned int timeout = 10000, const long icon = NIIF_NONE);
+				const unsigned int timeout = 10000, const long icon = NIIF_NONE) throw(TrayIconException);
+		/// window message issued to listener when taskbar is (re-)created, for example after a crash.
+		const static unsigned int WM_PING_TASKBAR_CREATED;
+
 	private:
 		/**
 		 * Unique identifier for the tray icon. Is initialised to the

@@ -33,11 +33,6 @@
 #include "PingException.h"
 #include "Ping.h"
 
-////////////////////////////////////////////////////////////////////////////////////
-// Static members
-// 
-const unsigned int CPing::WM_PING_TASKBAR_CREATED = ::RegisterWindowMessage(TEXT("TaskbarCreated"));
-
 CPing::CPing(
 		const HWND hMessageWindow,
 		const char* c_pszHost,
@@ -46,7 +41,7 @@ CPing::CPing(
 		const unsigned int c_uSleep,
 		const unsigned int c_uUnreachableThreshold,
 		const unsigned int c_lBufferSize, 
-		const unsigned int c_uTtl) :
+		const unsigned int c_uTtl) throw(CPingException):
 m_ulInetAddr(0L),
 m_pszHost(NULL),
 m_uBufferSize(c_lBufferSize),
@@ -201,7 +196,7 @@ CPing::~CPing()
 	}
 }
 
-void CPing::createSocket()
+void CPing::createSocket() throw(CPingException)
 {
 	int nResult = 0;
 
@@ -209,7 +204,10 @@ void CPing::createSocket()
 	m_sd = WSASocket(AF_INET, SOCK_RAW, IPPROTO_ICMP, 0,0,0);
 	if (INVALID_SOCKET == m_sd)
 	{
-		throw CPingException(std::string("Could not create raw socket. Are you Administrator?"));
+		char buf[255] = {0};
+		sprintf(buf, "%ld", GetLastError());
+		OutputDebugString(buf);
+		throw CPingException("Could not create raw socket. Are you Administrator?");
 	}
 
 	// set TTL of socket

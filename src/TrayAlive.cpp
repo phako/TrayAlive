@@ -29,7 +29,9 @@
 
 #include "NotifyWindowClass.h"
 #include "Ping.h"
+#include "PingException.h"
 #include "TrayIcon.h"
+#include "TrayIconException.h"
 
 CPing* ping;
 HINSTANCE myInstance;
@@ -63,7 +65,7 @@ LRESULT CALLBACK MyWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	char buf[255] = {0};
 	int num;
 
-	if (msg == CPing::WM_PING_TASKBAR_CREATED)
+	if (msg == TrayIcon::WM_PING_TASKBAR_CREATED)
 	{
 		trayIcon->setIcon(ping->isUp() ? m_hIconUp : m_hIconDown);
 		return 0;
@@ -77,7 +79,14 @@ LRESULT CALLBACK MyWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case ID_TRAYMENU_QUIT:
 			// end program;
 			ping->stop();
-			trayIcon->remove();
+			try
+			{
+				trayIcon->remove();
+			}
+			catch (const TrayIconException& e)
+			{
+				MessageBox(NULL, "Failed to remove tray icon", "Error", MB_OK);
+			}
 			DestroyWindow(hWnd);
 			return 0;
 		case ID_TRAYMENU_PINGHOST:
@@ -101,9 +110,19 @@ LRESULT CALLBACK MyWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 	case CPing::PING_HOST_UP:
 	case CPing::PING_HOST_DOWN:
-		trayIcon->setIcon(msg == CPing::PING_HOST_UP ? m_hIconUp : m_hIconDown);
-		num = sprintf(buf, "Host \"%s\" is %s", ((CPing*)wParam)->getHostName(), msg == CPing::PING_HOST_UP ? "up" : "down");
-		trayIcon->setInfo(buf);
+		try 
+		{
+			trayIcon->setIcon(
+					msg == CPing::PING_HOST_UP ? m_hIconUp : m_hIconDown);
+			num = sprintf(buf, "Host \"%s\" is %s", 
+					((CPing*)wParam)->getHostName(), 
+					msg == CPing::PING_HOST_UP ? "up" : "down");
+			trayIcon->setInfo(buf);
+		}
+		catch (const TrayIconException& e)
+		{
+			MessageBox(NULL, "Failed to change status icon", "Error", MB_OK);
+		}
 		return 0;
 	case WM_USER + 0x5000:
 		switch (LOWORD(lParam))
@@ -170,28 +189,48 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	trayIcon = new TrayIcon(hWnd, WM_USER + 0x5000);
 
-	trayIcon->setIcon(m_hIconUp);
-	trayIcon->setVersion();
-
-	ping = new CPing(hWnd, lpCmdLine, true);
-
-	num = sprintf(pszToolTip, "TrayAlive for host %s", ping->getHostName());
-	trayIcon->setToolTip(pszToolTip);
-	ping->start();
-
-	while ((bRet = GetMessage(&msg, NULL, 0, 0)) != 0)
+	try
 	{
-		if (bRet == -1)
+		trayIcon->setIcon(m_hIconUp);
+		OutputDebugString("Set icon");
+		trayIcon->setVersion();
+		OutputDebugString("Set version");
+		ping = new CPing(hWnd, lpCmdLine, true);
+
+		num = sprintf(pszToolTip, "TrayAlive for host %s", ping->getHostName());
+		trayIcon->setToolTip(pszToolTip);
+		OutputDebugString("Set tooltip");
+		ping->start();
+		OutputDebugString("Ping started");
+
+		while ((bRet = GetMessage(&msg, NULL, 0, 0)) != 0)
 		{
+			if (bRet == -1)
+			{
+			}
+			else
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 		}
-		else
+
+		delete ping;
+		delete trayIcon;
+	}
+	catch (const CPingException& e)
+	{
+		MessageBox(NULL, e.what(), "Error", MB_OK);
+		delete trayIcon;
+	}
+	catch (const TrayIconException& tie)
+	{
+		MessageBox(NULL, tie.what(), "Error", MB_OK);
+		if (trayIcon != NULL)
 		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			delete trayIcon;
 		}
 	}
-
-	delete ping;
 
 	WSACleanup();
 	return 0;

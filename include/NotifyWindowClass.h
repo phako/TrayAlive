@@ -24,15 +24,41 @@
 
 #include <windows.h>
 
-struct CNotifyWindowClass
+/**
+ * Simple wrapper around WNDCLASSEX structure.
+ * Hide declaration and creation of window class code in class.
+ */
+class CNotifyWindowClass
 {
 public:
+	/**
+	 * Static member containing the class name necessary to create the 
+	 * window using this class
+	 */
 	static const char* sc_lpszClassName;
 	
+	/**
+	 * Constructor. Create the ping window class.
+	 *
+	 * @param hInstance the instance
+	 * @param lpfnWndProc window proc associated with this class
+	 */
 	CNotifyWindowClass(HINSTANCE hInstance, WNDPROC lpfnWndProc);
+
+	/**
+	 * Register the window class.
+	 *
+	 * @return true on success, false on error.
+	 */
 	bool registerClass();
+
+	/**
+	 * Destructor.
+	 */
 	virtual ~CNotifyWindowClass() {};
 private:
+
+	/// wrapped WNDCLASSEX structure.
 	WNDCLASSEX m_clsx;
 };
 

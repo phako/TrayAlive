@@ -22,6 +22,8 @@
 #include <winsock2.h>
 #include <windows.h>
 
+#include "PingException.h"
+
 class CPing  
 {
 public:
@@ -40,12 +42,13 @@ public:
 	 *
 	 * The defaults are roughly taken from the windows command line utility ping.exe.
 	 * 
+	 * @param hMessageWindow window handle for message notification
 	 * @param c_pszHost hostname or IP address to ping
 	 * @param c_uSleep time between two ICMP packets
 	 * @param c_uTimeout how long to wait for an answer
 	 * @param c_uBufferSize ping packet size. Default is 32 bytes.
 	 * @param c_uTtl time to live. Default is 60
-	 * @param c_uHaveToFail how many pings in a row have to fail until a host is considered unreachable.
+	 * @param c_uUnreachableThreshold how many pings in a row have to fail until a host is considered unreachable.
 	 * @param c_bResolveAddress true, if you want ping to do a reverse lookup, false otherwise.
 	 */
 	CPing(
@@ -56,7 +59,9 @@ public:
 		const unsigned int c_uSleep = 1000,
 		const unsigned int c_uUnreachableThreshold = 4,
 		const unsigned int c_uBufferSize = 32, 
-		const unsigned int c_uTtl = 60);
+		const unsigned int c_uTtl = 60) throw(CPingException);
+
+	/// Destructor.
 	virtual ~CPing();
 
 	/**
@@ -92,9 +97,6 @@ public:
 	 */
 	static unsigned int __stdcall threadFunc(void *pInstance);
 
-	/// window message issued to listener when taskbar is (re-)created, for example after a crash.
-	const static unsigned int WM_PING_TASKBAR_CREATED;
-
 private:
 	/**
 	 * cheks if pInstance is a valid instance of CPing.
@@ -129,7 +131,7 @@ private:
 	/**
 	 * create the raw socket used for ICMP messages.
 	 */
-	void createSocket();
+	void createSocket() throw(CPingException);
 
 	/**
 	 * destination address

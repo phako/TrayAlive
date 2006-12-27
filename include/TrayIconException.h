@@ -1,5 +1,5 @@
 /*
-   PingException.h - Exception used in TrayAlive
+   TrayIconException.h - Exception used in TrayAlive
    
    Copyright 2006 Jens Georg
    
@@ -16,34 +16,38 @@
    limitations under the License.
 */
 
-#ifndef _PING_EXCEPTION_H
-#define _PING_EXCEPTION_H
+#ifndef _TRAY_ICON_EXCEPTION_H
+#define _TRAY_ICON_EXCEPTION_H
 
-#include <exception>
 #include <string>
+#include <exception>
 
-class CPingException : public std::exception  
+class TrayIconException : public std::exception  
 {
 public:
 	/**
-	 * Constructor. Create a ping exception with a message.
-	 * 
-	 * @param message the message accessable with what()
+	 * Constructor.
+	 *
+	 * Create a tray icon exception with a explaining message.
+	 *
+	 * @param message the explaining message for the exception
 	 */
-	CPingException(const std::string& message) : m_message(message) { };
-
-	/// Destructor.
-	virtual ~CPingException() throw() {};
+	TrayIconException(const std::string& message) : m_message(message) {};
 
 	/**
-	 * Get the cause of the exception.
+	 * Destructor.
+	 */
+	virtual ~TrayIconException() throw() {};
+
+	/**
+	 * Get the textual description for the exception's cause.
 	 *
-	 * @return a textual description of the message cause.
+	 * @return a const pointer to the message.
 	 */
 	virtual const char* what() const throw() { return m_message.c_str(); };
 private:
 
-	/// Textual description of the cause of the exception
+	/// Textual description of the exception
 	std::string m_message;
 };
 
