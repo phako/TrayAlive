@@ -16,6 +16,7 @@
    limitations under the License.
 */
 
+/** @file */
 #include "NotifyWindowClass.h"
 
 //////////////////////////////////////////////////////////////////////

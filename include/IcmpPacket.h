@@ -16,6 +16,8 @@
    limitations under the License.
 */
 
+/** @file */
+
 #ifndef _ICMP_PACKET_H
 #define _ICMP_PACKET_H
 

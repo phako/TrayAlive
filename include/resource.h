@@ -17,6 +17,7 @@
    limitations under the License.
 */
 
+/** @file */
 #define IDI_ICON1                       101
 #define IDI_ICON_UP                     102
 #define IDI_ICON_DOWN                   103

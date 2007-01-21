@@ -16,6 +16,8 @@
    limitations under the License.
 */
 
+/** @file */
+
 #include "inttypes.h"
 
 #pragma pack(1)

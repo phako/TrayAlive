@@ -1,0 +1,7 @@
+base referer
+rect $resource_8h.html 225,5 319,29
+rect $NotifyWindowClass_8h.html 191,253 353,277
+rect $Ping_8h.html 240,104 304,128
+rect $PingException_8h.html 417,105 548,129
+rect $TrayIcon_8h.html 227,301 317,325
+rect $TrayIconException_8h.html 404,337 561,361

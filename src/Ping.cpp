@@ -16,6 +16,8 @@
    limitations under the License.
 */
 
+/** @file */
+
 #include <winsock2.h>
 #ifndef IP_TTL
 #	include <ws2tcpip.h>

@@ -1,0 +1,4 @@
+base referer
+rect $Ping_8h.html 237,56 355,80
+rect $Ping_8cpp.html 419,32 523,56
+rect $TrayAlive_8cpp.html 403,80 539,104

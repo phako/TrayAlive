@@ -1,0 +1,4 @@
+base referer
+rect $TrayIcon_8h.html 268,56 412,80
+rect $TrayAlive_8cpp.html 462,32 598,56
+rect $TrayIcon_8cpp.html 464,80 595,104

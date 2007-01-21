@@ -16,6 +16,7 @@
    limitations under the License.
 */
 
+/** @file */
 #ifndef _TRAY_ICON_EXCEPTION_H
 #define _TRAY_ICON_EXCEPTION_H
 

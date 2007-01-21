@@ -61,7 +61,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>
 
 <p>
-Definition at line <a class="el" href="Ping_8h-source.html#l00027">27</a> of file <a class="el" href="Ping_8h-source.html">Ping.h</a>.<hr><h2>Member Enumeration Documentation</h2>
+Definition at line <a class="el" href="Ping_8h-source.html#l00028">28</a> of file <a class="el" href="Ping_8h-source.html">Ping.h</a>.<hr><h2>Member Enumeration Documentation</h2>
 <a class="anchor" name="6639a26d5a9c0f4c2de9a5be1308044d"></a><!-- doxytag: member="CPing::@1" ref="6639a26d5a9c0f4c2de9a5be1308044d" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -86,7 +86,7 @@ Signal to the listening window that the host is down. </td></tr>
 </dl>
 
 <p>
-Definition at line <a class="el" href="Ping_8h-source.html#l00033">33</a> of file <a class="el" href="Ping_8h-source.html">Ping.h</a>.
+Definition at line <a class="el" href="Ping_8h-source.html#l00034">34</a> of file <a class="el" href="Ping_8h-source.html">Ping.h</a>.
 </div>
 </div><p>
 <hr><h2>Constructor &amp; Destructor Documentation</h2>
@@ -169,9 +169,9 @@ The defaults are roughly taken from the windows command line utility ping.exe.<p
 </dl>
 
 <p>
-Definition at line <a class="el" href="Ping_8cpp-source.html#l00036">36</a> of file <a class="el" href="Ping_8cpp-source.html">Ping.cpp</a>.
+Definition at line <a class="el" href="Ping_8cpp-source.html#l00038">38</a> of file <a class="el" href="Ping_8cpp-source.html">Ping.cpp</a>.
 <p>
-References <a class="el" href="IpPacket_8h-source.html#l00034">IpPacket::MAX_PACKET_SIZE</a>.
+References <a class="el" href="IpPacket_8h-source.html#l00036">IpPacket::MAX_PACKET_SIZE</a>.
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
@@ -196,7 +196,9 @@ Return the name of the host.
 <dl compact><dt><b>Returns:</b></dt><dd>the host name if Ping was created with name resolution, a string representation of the IP address otherwise. </dd></dl>
 
 <p>
-Definition at line <a class="el" href="Ping_8h-source.html#l00084">84</a> of file <a class="el" href="Ping_8h-source.html">Ping.h</a>.
+Definition at line <a class="el" href="Ping_8h-source.html#l00085">85</a> of file <a class="el" href="Ping_8h-source.html">Ping.h</a>.
+<p>
+Referenced by <a class="el" href="TrayAlive_8cpp-source.html#l00148">WinMain()</a>.
 </div>
 </div><p>
 <a class="anchor" name="0f218688f8a2d12a9870f9579b75ac2e"></a><!-- doxytag: member="CPing::isUp" ref="0f218688f8a2d12a9870f9579b75ac2e" args="()" -->
@@ -220,7 +222,9 @@ Return the current status of the pinged host.
 <dl compact><dt><b>Returns:</b></dt><dd>false, if the host is down, true, if the host is up (or less than threshold packets have not been answered. </dd></dl>
 
 <p>
-Definition at line <a class="el" href="Ping_8h-source.html#l00092">92</a> of file <a class="el" href="Ping_8h-source.html">Ping.h</a>.
+Definition at line <a class="el" href="Ping_8h-source.html#l00093">93</a> of file <a class="el" href="Ping_8h-source.html">Ping.h</a>.
+<p>
+Referenced by <a class="el" href="TrayAlive_8cpp-source.html#l00064">MyWindowProc()</a>.
 </div>
 </div><p>
 <a class="anchor" name="7ba76651f94fcc160ac558f587428572"></a><!-- doxytag: member="CPing::start" ref="7ba76651f94fcc160ac558f587428572" args="()" -->
@@ -243,9 +247,11 @@ Starts pinging the host.
 <p>
 Notifications will be sent to the listener using standard Windows window messages. 
 <p>
-Definition at line <a class="el" href="Ping_8cpp-source.html#l00117">117</a> of file <a class="el" href="Ping_8cpp-source.html">Ping.cpp</a>.
+Definition at line <a class="el" href="Ping_8cpp-source.html#l00119">119</a> of file <a class="el" href="Ping_8cpp-source.html">Ping.cpp</a>.
 <p>
-References <a class="el" href="Ping_8cpp-source.html#l00147">threadFunc()</a>.
+References <a class="el" href="Ping_8cpp-source.html#l00149">threadFunc()</a>.
+<p>
+Referenced by <a class="el" href="TrayAlive_8cpp-source.html#l00064">MyWindowProc()</a>, and <a class="el" href="TrayAlive_8cpp-source.html#l00148">WinMain()</a>.
 <p>
 Here is the call graph for this function:<p><center><img src="classCPing_7ba76651f94fcc160ac558f587428572_cgraph.png" border="0" usemap="#classCPing_7ba76651f94fcc160ac558f587428572_cgraph_map" alt=""></center>
 <map name="classCPing_7ba76651f94fcc160ac558f587428572_cgraph_map">
@@ -276,11 +282,11 @@ Static member function used for _beginthreadex.
 <p>
 The member will lookup if its parameter is a valid instance of <a class="el" href="classCPing.html">CPing</a> and will then call pInstance-&gt;pingThread(). 
 <p>
-Definition at line <a class="el" href="Ping_8cpp-source.html#l00147">147</a> of file <a class="el" href="Ping_8cpp-source.html">Ping.cpp</a>.
+Definition at line <a class="el" href="Ping_8cpp-source.html#l00149">149</a> of file <a class="el" href="Ping_8cpp-source.html">Ping.cpp</a>.
 <p>
-References <a class="el" href="Ping_8cpp-source.html#l00221">pingThread()</a>.
+References <a class="el" href="Ping_8cpp-source.html#l00223">pingThread()</a>.
 <p>
-Referenced by <a class="el" href="Ping_8cpp-source.html#l00117">start()</a>.
+Referenced by <a class="el" href="Ping_8cpp-source.html#l00119">start()</a>.
 <p>
 Here is the call graph for this function:<p><center><img src="classCPing_cf901d01b98bca574bdab1781c4ee2cd_cgraph.png" border="0" usemap="#classCPing_cf901d01b98bca574bdab1781c4ee2cd_cgraph_map" alt=""></center>
 <map name="classCPing_cf901d01b98bca574bdab1781c4ee2cd_cgraph_map">
@@ -290,8 +296,8 @@ Here is the call graph for this function:<p><center><img src="classCPing_cf901d0
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following files:<ul>
-<li>/home/jens/Source/TrayAlive/include/<a class="el" href="Ping_8h-source.html">Ping.h</a><li>/home/jens/Source/TrayAlive/src/<a class="el" href="Ping_8cpp-source.html">Ping.cpp</a></ul>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Dec 27 12:13:47 2006 for TrayAlive by&nbsp;
+<li>include/<a class="el" href="Ping_8h-source.html">Ping.h</a><li>src/<a class="el" href="Ping_8cpp-source.html">Ping.cpp</a></ul>
+<hr size="1"><address style="align: right;"><small>Generated on Sun Jan 21 11:34:50 2007 for TrayAlive by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.4.7 </small></address>
 </body>

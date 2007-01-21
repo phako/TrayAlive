@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
-<title>TrayAlive: /home/jens/Source/TrayAlive/src/TrayIcon.cpp Source File</title>
+<title>TrayAlive: src/TrayIcon.cpp Source File</title>
 <link href="doxygen.css" rel="stylesheet" type="text/css">
 <link href="tabs.css" rel="stylesheet" type="text/css">
 </head><body>
@@ -11,7 +11,12 @@
     <li><a href="annotated.html"><span>Classes</span></a></li>
     <li id="current"><a href="files.html"><span>Files</span></a></li>
   </ul></div>
-<h1>/home/jens/Source/TrayAlive/src/TrayIcon.cpp</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<div class="tabs">
+  <ul>
+    <li><a href="files.html"><span>File&nbsp;List</span></a></li>
+    <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
+  </ul></div>
+<h1>src/TrayIcon.cpp</h1><a href="TrayIcon_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
 <a name="l00002"></a>00002 <span class="comment">   TrayIcon.cpp</span>
 <a name="l00003"></a>00003 <span class="comment"></span>
 <a name="l00004"></a>00004 <span class="comment">   Copyright 2006 Jens Georg</span>
@@ -28,141 +33,142 @@
 <a name="l00015"></a>00015 <span class="comment">   See the License for the specific language governing permissions and</span>
 <a name="l00016"></a>00016 <span class="comment">   limitations under the License.</span>
 <a name="l00017"></a>00017 <span class="comment">*/</span>
-<a name="l00018"></a>00018 <span class="preprocessor">#include &lt;string&gt;</span>
-<a name="l00019"></a>00019 
-<a name="l00020"></a>00020 <span class="preprocessor">#include "TrayIconException.h"</span>
-<a name="l00021"></a>00021 <span class="preprocessor">#include "TrayIcon.h"</span>
-<a name="l00022"></a>00022 
-<a name="l00023"></a>00023 
-<a name="l00025"></a>00025 <span class="comment">// Static members</span>
-<a name="l00026"></a>00026 <span class="comment">// </span>
-<a name="l00027"></a>00027 <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classTrayIcon.html#d34e4d62d24cb15be74a32ab496f19fe">TrayIcon::WM_PING_TASKBAR_CREATED</a> = ::RegisterWindowMessage(TEXT(<span class="stringliteral">"TaskbarCreated"</span>));
-<a name="l00028"></a>00028 
-<a name="l00029"></a><a class="code" href="classTrayIcon.html#889246e22dd556f203a1de75d097af60">00029</a> <a class="code" href="classTrayIcon.html#889246e22dd556f203a1de75d097af60">TrayIcon::TrayIcon</a>(<span class="keyword">const</span> HWND hWnd, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> callbackMessage):
-<a name="l00030"></a>00030         m_uid(0),
-<a name="l00031"></a>00031         m_hWnd(hWnd),
-<a name="l00032"></a>00032         m_callbackMessage(callbackMessage),
-<a name="l00033"></a>00033         m_added(false)
-<a name="l00034"></a>00034 {
-<a name="l00035"></a>00035         m_uid = GetCurrentProcessId();
-<a name="l00036"></a>00036 }
-<a name="l00037"></a>00037 
-<a name="l00038"></a><a class="code" href="classTrayIcon.html#4ab023074143b46c3eb9dda2a1678492">00038</a> <a class="code" href="classTrayIcon.html#4ab023074143b46c3eb9dda2a1678492">TrayIcon::~TrayIcon</a>()
-<a name="l00039"></a>00039 {
-<a name="l00040"></a>00040         <span class="keywordflow">if</span> (m_added)
-<a name="l00041"></a>00041         {
-<a name="l00042"></a>00042                 <a class="code" href="classTrayIcon.html#4858538fdb81dc9bacfcec8493687a7b">remove</a>();
-<a name="l00043"></a>00043         }
-<a name="l00044"></a>00044 }
-<a name="l00045"></a>00045 
-<a name="l00046"></a><a class="code" href="classTrayIcon.html#7b6dab7d11f0853206f56af23aad1d33">00046</a> <span class="keywordtype">void</span> <a class="code" href="classTrayIcon.html#7b6dab7d11f0853206f56af23aad1d33">TrayIcon::setIcon</a>(<span class="keyword">const</span> HICON hIcon) <span class="keywordflow">throw</span>(<a class="code" href="classTrayIconException.html">TrayIconException</a>)
-<a name="l00047"></a>00047 {
-<a name="l00048"></a>00048         BOOL res = FALSE;
-<a name="l00049"></a>00049         NOTIFYICONDATA ntd = {0};
-<a name="l00050"></a>00050 
-<a name="l00051"></a>00051         ntd.cbSize = <span class="keyword">sizeof</span>(NOTIFYICONDATA);
-<a name="l00052"></a>00052         ntd.hWnd = m_hWnd;
-<a name="l00053"></a>00053         ntd.uID = m_uid;
-<a name="l00054"></a>00054         ntd.hIcon = hIcon;
-<a name="l00055"></a>00055         ntd.uFlags = NIF_ICON;
-<a name="l00056"></a>00056 
-<a name="l00057"></a>00057         <span class="keywordflow">if</span> (!m_added)
-<a name="l00058"></a>00058         {
-<a name="l00059"></a>00059                 ntd.uFlags |= NIF_MESSAGE;
-<a name="l00060"></a>00060                 ntd.uCallbackMessage = m_callbackMessage;
-<a name="l00061"></a>00061                 res = Shell_NotifyIcon(NIM_ADD, &amp;ntd);
-<a name="l00062"></a>00062         }
-<a name="l00063"></a>00063         <span class="keywordflow">else</span>
-<a name="l00064"></a>00064         {
-<a name="l00065"></a>00065                 res = Shell_NotifyIcon(NIM_MODIFY, &amp;ntd);
-<a name="l00066"></a>00066         }
-<a name="l00067"></a>00067 
-<a name="l00068"></a>00068         <span class="keywordflow">if</span> (FALSE == res)
-<a name="l00069"></a>00069         {
-<a name="l00070"></a>00070                 <span class="keywordflow">throw</span> <a class="code" href="classTrayIconException.html">TrayIconException</a>(<span class="stringliteral">"Adding the tray icon failed"</span>);
-<a name="l00071"></a>00071         }
-<a name="l00072"></a>00072         <span class="keywordflow">else</span>
-<a name="l00073"></a>00073         {
-<a name="l00074"></a>00074                 m_added = <span class="keyword">true</span>;
-<a name="l00075"></a>00075         }
-<a name="l00076"></a>00076 }
-<a name="l00077"></a>00077 
-<a name="l00078"></a><a class="code" href="classTrayIcon.html#b81afabeb3b6573126b50b48773dd8f7">00078</a> <span class="keywordtype">void</span> <a class="code" href="classTrayIcon.html#b81afabeb3b6573126b50b48773dd8f7">TrayIcon::setToolTip</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* toolTip) <span class="keywordflow">throw</span>(<a class="code" href="classTrayIconException.html">TrayIconException</a>)
-<a name="l00079"></a>00079 {
-<a name="l00080"></a>00080         NOTIFYICONDATA ntd = {0};
-<a name="l00081"></a>00081         BOOL res = FALSE;
-<a name="l00082"></a>00082 
-<a name="l00083"></a>00083         ntd.cbSize = <span class="keyword">sizeof</span>(NOTIFYICONDATA);
-<a name="l00084"></a>00084         ntd.hWnd = m_hWnd;
-<a name="l00085"></a>00085         ntd.uID = m_uid;
-<a name="l00086"></a>00086         ntd.uFlags = NIF_TIP;
-<a name="l00087"></a>00087         memcpy(ntd.szTip, toolTip, strlen(toolTip));
-<a name="l00088"></a>00088 
-<a name="l00089"></a>00089         res = Shell_NotifyIcon(NIM_MODIFY, &amp;ntd);
-<a name="l00090"></a>00090         <span class="keywordflow">if</span> (FALSE == res)
-<a name="l00091"></a>00091         {
-<a name="l00092"></a>00092                 <span class="keywordflow">throw</span> <a class="code" href="classTrayIconException.html">TrayIconException</a>(<span class="stringliteral">"Failed to set the tool tip"</span>);
-<a name="l00093"></a>00093         }
-<a name="l00094"></a>00094 }
-<a name="l00095"></a>00095 
-<a name="l00096"></a><a class="code" href="classTrayIcon.html#4858538fdb81dc9bacfcec8493687a7b">00096</a> <span class="keywordtype">void</span> <a class="code" href="classTrayIcon.html#4858538fdb81dc9bacfcec8493687a7b">TrayIcon::remove</a>() throw(<a class="code" href="classTrayIconException.html">TrayIconException</a>)
-<a name="l00097"></a>00097 {
-<a name="l00098"></a>00098         NOTIFYICONDATA ntd = {0};
-<a name="l00099"></a>00099         BOOL res = FALSE;
-<a name="l00100"></a>00100 
-<a name="l00101"></a>00101         ntd.cbSize = <span class="keyword">sizeof</span>(NOTIFYICONDATA);
-<a name="l00102"></a>00102         ntd.hWnd = m_hWnd;
-<a name="l00103"></a>00103         ntd.uID = m_uid;
-<a name="l00104"></a>00104 
-<a name="l00105"></a>00105         res = Shell_NotifyIcon(NIM_DELETE, &amp;ntd);
-<a name="l00106"></a>00106         <span class="keywordflow">if</span> (FALSE == res)
-<a name="l00107"></a>00107         {
-<a name="l00108"></a>00108                 <span class="keywordflow">throw</span> TrayIconException(<span class="stringliteral">"Failed to remove the icon"</span>);
-<a name="l00109"></a>00109         }
-<a name="l00110"></a>00110         <span class="keywordflow">else</span>
-<a name="l00111"></a>00111         {
-<a name="l00112"></a>00112                 m_added = <span class="keyword">false</span>;
-<a name="l00113"></a>00113         }
-<a name="l00114"></a>00114 }
-<a name="l00115"></a>00115 
-<a name="l00116"></a><a class="code" href="classTrayIcon.html#c26e65bd99c64829de2c29738444de1b">00116</a> <span class="keywordtype">void</span> <a class="code" href="classTrayIcon.html#c26e65bd99c64829de2c29738444de1b">TrayIcon::setVersion</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> version) <span class="keywordflow">throw</span>(<a class="code" href="classTrayIconException.html">TrayIconException</a>)
-<a name="l00117"></a>00117 {
-<a name="l00118"></a>00118         NOTIFYICONDATA ntd = {0};
-<a name="l00119"></a>00119         BOOL res = FALSE;
-<a name="l00120"></a>00120 
-<a name="l00121"></a>00121         ntd.cbSize = <span class="keyword">sizeof</span>(NOTIFYICONDATA);
-<a name="l00122"></a>00122         ntd.hWnd = m_hWnd;
-<a name="l00123"></a>00123         ntd.uID = m_uid;
-<a name="l00124"></a>00124         ntd.uVersion = version;
-<a name="l00125"></a>00125 
-<a name="l00126"></a>00126         res = Shell_NotifyIcon(NIM_SETVERSION, &amp;ntd);
-<a name="l00127"></a>00127         <span class="keywordflow">if</span> (FALSE == res)
-<a name="l00128"></a>00128         {
-<a name="l00129"></a>00129                 <span class="keywordflow">throw</span> <a class="code" href="classTrayIconException.html">TrayIconException</a>(<span class="stringliteral">"Failed to set the version"</span>);
-<a name="l00130"></a>00130         }
-<a name="l00131"></a>00131 }
-<a name="l00132"></a>00132 
-<a name="l00133"></a><a class="code" href="classTrayIcon.html#297ee748223556ae0941fac6cfa6a3eb">00133</a> <span class="keywordtype">void</span> <a class="code" href="classTrayIcon.html#297ee748223556ae0941fac6cfa6a3eb">TrayIcon::setInfo</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* message, <span class="keyword">const</span> <span class="keywordtype">char</span>* title, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> timeout, <span class="keyword">const</span> <span class="keywordtype">long</span> icon) <span class="keywordflow">throw</span>(<a class="code" href="classTrayIconException.html">TrayIconException</a>)
-<a name="l00134"></a>00134 {
-<a name="l00135"></a>00135         NOTIFYICONDATA ntd = {0};
-<a name="l00136"></a>00136         BOOL res = FALSE;
-<a name="l00137"></a>00137 
-<a name="l00138"></a>00138         ntd.cbSize = <span class="keyword">sizeof</span>(NOTIFYICONDATA);
-<a name="l00139"></a>00139         ntd.hWnd = m_hWnd;
-<a name="l00140"></a>00140         ntd.uID = m_uid;
-<a name="l00141"></a>00141         ntd.uFlags = NIF_INFO;
-<a name="l00142"></a>00142         ntd.uTimeout = timeout;
-<a name="l00143"></a>00143         memcpy(ntd.szInfo, message, strlen(message));
-<a name="l00144"></a>00144         memcpy(ntd.szInfoTitle, title, strlen(title));
-<a name="l00145"></a>00145         ntd.dwInfoFlags = icon;
-<a name="l00146"></a>00146 
-<a name="l00147"></a>00147         res = Shell_NotifyIcon(NIM_MODIFY, &amp;ntd);
-<a name="l00148"></a>00148         <span class="keywordflow">if</span> (FALSE == res)
-<a name="l00149"></a>00149         {
-<a name="l00150"></a>00150                 <span class="keywordflow">throw</span> <a class="code" href="classTrayIconException.html">TrayIconException</a>(<span class="stringliteral">"Failed to set a balloon tool tip"</span>);
-<a name="l00151"></a>00151         }
-<a name="l00152"></a>00152 }
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Wed Dec 27 12:13:47 2006 for TrayAlive by&nbsp;
+<a name="l00018"></a>00018 
+<a name="l00020"></a>00020 <span class="preprocessor">#include &lt;string&gt;</span>
+<a name="l00021"></a>00021 
+<a name="l00022"></a>00022 <span class="preprocessor">#include "<a class="code" href="TrayIconException_8h.html">TrayIconException.h</a>"</span>
+<a name="l00023"></a>00023 <span class="preprocessor">#include "<a class="code" href="TrayIcon_8h.html">TrayIcon.h</a>"</span>
+<a name="l00024"></a>00024 
+<a name="l00025"></a>00025 
+<a name="l00027"></a>00027 <span class="comment">// Static members</span>
+<a name="l00028"></a>00028 <span class="comment">// </span>
+<a name="l00029"></a>00029 <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classTrayIcon.html#d34e4d62d24cb15be74a32ab496f19fe">TrayIcon::WM_PING_TASKBAR_CREATED</a> = ::RegisterWindowMessage(TEXT(<span class="stringliteral">"TaskbarCreated"</span>));
+<a name="l00030"></a>00030 
+<a name="l00031"></a><a class="code" href="classTrayIcon.html#889246e22dd556f203a1de75d097af60">00031</a> <a class="code" href="classTrayIcon.html#889246e22dd556f203a1de75d097af60">TrayIcon::TrayIcon</a>(<span class="keyword">const</span> HWND hWnd, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> callbackMessage):
+<a name="l00032"></a>00032         m_uid(0),
+<a name="l00033"></a>00033         m_hWnd(hWnd),
+<a name="l00034"></a>00034         m_callbackMessage(callbackMessage),
+<a name="l00035"></a>00035         m_added(false)
+<a name="l00036"></a>00036 {
+<a name="l00037"></a>00037         m_uid = GetCurrentProcessId();
+<a name="l00038"></a>00038 }
+<a name="l00039"></a>00039 
+<a name="l00040"></a><a class="code" href="classTrayIcon.html#4ab023074143b46c3eb9dda2a1678492">00040</a> <a class="code" href="classTrayIcon.html#4ab023074143b46c3eb9dda2a1678492">TrayIcon::~TrayIcon</a>()
+<a name="l00041"></a>00041 {
+<a name="l00042"></a>00042         <span class="keywordflow">if</span> (m_added)
+<a name="l00043"></a>00043         {
+<a name="l00044"></a>00044                 <a class="code" href="classTrayIcon.html#4858538fdb81dc9bacfcec8493687a7b">remove</a>();
+<a name="l00045"></a>00045         }
+<a name="l00046"></a>00046 }
+<a name="l00047"></a>00047 
+<a name="l00048"></a><a class="code" href="classTrayIcon.html#7b6dab7d11f0853206f56af23aad1d33">00048</a> <span class="keywordtype">void</span> <a class="code" href="classTrayIcon.html#7b6dab7d11f0853206f56af23aad1d33">TrayIcon::setIcon</a>(<span class="keyword">const</span> HICON hIcon) <span class="keywordflow">throw</span>(<a class="code" href="classTrayIconException.html">TrayIconException</a>)
+<a name="l00049"></a>00049 {
+<a name="l00050"></a>00050         BOOL res = FALSE;
+<a name="l00051"></a>00051         NOTIFYICONDATA ntd = {0};
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053         ntd.cbSize = <span class="keyword">sizeof</span>(NOTIFYICONDATA);
+<a name="l00054"></a>00054         ntd.hWnd = m_hWnd;
+<a name="l00055"></a>00055         ntd.uID = m_uid;
+<a name="l00056"></a>00056         ntd.hIcon = hIcon;
+<a name="l00057"></a>00057         ntd.uFlags = NIF_ICON;
+<a name="l00058"></a>00058 
+<a name="l00059"></a>00059         <span class="keywordflow">if</span> (!m_added)
+<a name="l00060"></a>00060         {
+<a name="l00061"></a>00061                 ntd.uFlags |= NIF_MESSAGE;
+<a name="l00062"></a>00062                 ntd.uCallbackMessage = m_callbackMessage;
+<a name="l00063"></a>00063                 res = Shell_NotifyIcon(NIM_ADD, &amp;ntd);
+<a name="l00064"></a>00064         }
+<a name="l00065"></a>00065         <span class="keywordflow">else</span>
+<a name="l00066"></a>00066         {
+<a name="l00067"></a>00067                 res = Shell_NotifyIcon(NIM_MODIFY, &amp;ntd);
+<a name="l00068"></a>00068         }
+<a name="l00069"></a>00069 
+<a name="l00070"></a>00070         <span class="keywordflow">if</span> (FALSE == res)
+<a name="l00071"></a>00071         {
+<a name="l00072"></a>00072                 <span class="keywordflow">throw</span> <a class="code" href="classTrayIconException.html">TrayIconException</a>(<span class="stringliteral">"Adding the tray icon failed"</span>);
+<a name="l00073"></a>00073         }
+<a name="l00074"></a>00074         <span class="keywordflow">else</span>
+<a name="l00075"></a>00075         {
+<a name="l00076"></a>00076                 m_added = <span class="keyword">true</span>;
+<a name="l00077"></a>00077         }
+<a name="l00078"></a>00078 }
+<a name="l00079"></a>00079 
+<a name="l00080"></a><a class="code" href="classTrayIcon.html#b81afabeb3b6573126b50b48773dd8f7">00080</a> <span class="keywordtype">void</span> <a class="code" href="classTrayIcon.html#b81afabeb3b6573126b50b48773dd8f7">TrayIcon::setToolTip</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* toolTip) <span class="keywordflow">throw</span>(<a class="code" href="classTrayIconException.html">TrayIconException</a>)
+<a name="l00081"></a>00081 {
+<a name="l00082"></a>00082         NOTIFYICONDATA ntd = {0};
+<a name="l00083"></a>00083         BOOL res = FALSE;
+<a name="l00084"></a>00084 
+<a name="l00085"></a>00085         ntd.cbSize = <span class="keyword">sizeof</span>(NOTIFYICONDATA);
+<a name="l00086"></a>00086         ntd.hWnd = m_hWnd;
+<a name="l00087"></a>00087         ntd.uID = m_uid;
+<a name="l00088"></a>00088         ntd.uFlags = NIF_TIP;
+<a name="l00089"></a>00089         memcpy(ntd.szTip, toolTip, strlen(toolTip));
+<a name="l00090"></a>00090 
+<a name="l00091"></a>00091         res = Shell_NotifyIcon(NIM_MODIFY, &amp;ntd);
+<a name="l00092"></a>00092         <span class="keywordflow">if</span> (FALSE == res)
+<a name="l00093"></a>00093         {
+<a name="l00094"></a>00094                 <span class="keywordflow">throw</span> <a class="code" href="classTrayIconException.html">TrayIconException</a>(<span class="stringliteral">"Failed to set the tool tip"</span>);
+<a name="l00095"></a>00095         }
+<a name="l00096"></a>00096 }
+<a name="l00097"></a>00097 
+<a name="l00098"></a><a class="code" href="classTrayIcon.html#4858538fdb81dc9bacfcec8493687a7b">00098</a> <span class="keywordtype">void</span> <a class="code" href="classTrayIcon.html#4858538fdb81dc9bacfcec8493687a7b">TrayIcon::remove</a>() throw(<a class="code" href="classTrayIconException.html">TrayIconException</a>)
+<a name="l00099"></a>00099 {
+<a name="l00100"></a>00100         NOTIFYICONDATA ntd = {0};
+<a name="l00101"></a>00101         BOOL res = FALSE;
+<a name="l00102"></a>00102 
+<a name="l00103"></a>00103         ntd.cbSize = <span class="keyword">sizeof</span>(NOTIFYICONDATA);
+<a name="l00104"></a>00104         ntd.hWnd = m_hWnd;
+<a name="l00105"></a>00105         ntd.uID = m_uid;
+<a name="l00106"></a>00106 
+<a name="l00107"></a>00107         res = Shell_NotifyIcon(NIM_DELETE, &amp;ntd);
+<a name="l00108"></a>00108         <span class="keywordflow">if</span> (FALSE == res)
+<a name="l00109"></a>00109         {
+<a name="l00110"></a>00110                 <span class="keywordflow">throw</span> TrayIconException(<span class="stringliteral">"Failed to remove the icon"</span>);
+<a name="l00111"></a>00111         }
+<a name="l00112"></a>00112         <span class="keywordflow">else</span>
+<a name="l00113"></a>00113         {
+<a name="l00114"></a>00114                 m_added = <span class="keyword">false</span>;
+<a name="l00115"></a>00115         }
+<a name="l00116"></a>00116 }
+<a name="l00117"></a>00117 
+<a name="l00118"></a><a class="code" href="classTrayIcon.html#fa555f7c93c6a8a10c3f60bf4afc98cd">00118</a> <span class="keywordtype">void</span> <a class="code" href="classTrayIcon.html#fa555f7c93c6a8a10c3f60bf4afc98cd">TrayIcon::setVersion</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> version) <span class="keywordflow">throw</span>(<a class="code" href="classTrayIconException.html">TrayIconException</a>)
+<a name="l00119"></a>00119 {
+<a name="l00120"></a>00120         NOTIFYICONDATA ntd = {0};
+<a name="l00121"></a>00121         BOOL res = FALSE;
+<a name="l00122"></a>00122 
+<a name="l00123"></a>00123         ntd.cbSize = <span class="keyword">sizeof</span>(NOTIFYICONDATA);
+<a name="l00124"></a>00124         ntd.hWnd = m_hWnd;
+<a name="l00125"></a>00125         ntd.uID = m_uid;
+<a name="l00126"></a>00126         ntd.uVersion = version;
+<a name="l00127"></a>00127 
+<a name="l00128"></a>00128         res = Shell_NotifyIcon(NIM_SETVERSION, &amp;ntd);
+<a name="l00129"></a>00129         <span class="keywordflow">if</span> (FALSE == res)
+<a name="l00130"></a>00130         {
+<a name="l00131"></a>00131                 <span class="keywordflow">throw</span> <a class="code" href="classTrayIconException.html">TrayIconException</a>(<span class="stringliteral">"Failed to set the version"</span>);
+<a name="l00132"></a>00132         }
+<a name="l00133"></a>00133 }
+<a name="l00134"></a>00134 
+<a name="l00135"></a><a class="code" href="classTrayIcon.html#297ee748223556ae0941fac6cfa6a3eb">00135</a> <span class="keywordtype">void</span> <a class="code" href="classTrayIcon.html#297ee748223556ae0941fac6cfa6a3eb">TrayIcon::setInfo</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* message, <span class="keyword">const</span> <span class="keywordtype">char</span>* title, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> timeout, <span class="keyword">const</span> <span class="keywordtype">long</span> icon) <span class="keywordflow">throw</span>(<a class="code" href="classTrayIconException.html">TrayIconException</a>)
+<a name="l00136"></a>00136 {
+<a name="l00137"></a>00137         NOTIFYICONDATA ntd = {0};
+<a name="l00138"></a>00138         BOOL res = FALSE;
+<a name="l00139"></a>00139 
+<a name="l00140"></a>00140         ntd.cbSize = <span class="keyword">sizeof</span>(NOTIFYICONDATA);
+<a name="l00141"></a>00141         ntd.hWnd = m_hWnd;
+<a name="l00142"></a>00142         ntd.uID = m_uid;
+<a name="l00143"></a>00143         ntd.uFlags = NIF_INFO;
+<a name="l00144"></a>00144         ntd.uTimeout = timeout;
+<a name="l00145"></a>00145         memcpy(ntd.szInfo, message, strlen(message));
+<a name="l00146"></a>00146         memcpy(ntd.szInfoTitle, title, strlen(title));
+<a name="l00147"></a>00147         ntd.dwInfoFlags = icon;
+<a name="l00148"></a>00148 
+<a name="l00149"></a>00149         res = Shell_NotifyIcon(NIM_MODIFY, &amp;ntd);
+<a name="l00150"></a>00150         <span class="keywordflow">if</span> (FALSE == res)
+<a name="l00151"></a>00151         {
+<a name="l00152"></a>00152                 <span class="keywordflow">throw</span> <a class="code" href="classTrayIconException.html">TrayIconException</a>(<span class="stringliteral">"Failed to set a balloon tool tip"</span>);
+<a name="l00153"></a>00153         }
+<a name="l00154"></a>00154 }
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sun Jan 21 11:33:47 2007 for TrayAlive by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.4.7 </small></address>
 </body>

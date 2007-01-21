@@ -16,6 +16,7 @@
    limitations under the License.
 */
 
+/** @file */
 #include <memory.h>
 #ifdef _WIN32
 #   include <winsock2.h>

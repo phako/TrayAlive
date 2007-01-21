@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
-<title>TrayAlive: /home/jens/Source/TrayAlive/include/PingException.h Source File</title>
+<title>TrayAlive: include/PingException.h Source File</title>
 <link href="doxygen.css" rel="stylesheet" type="text/css">
 <link href="tabs.css" rel="stylesheet" type="text/css">
 </head><body>
@@ -11,7 +11,12 @@
     <li><a href="annotated.html"><span>Classes</span></a></li>
     <li id="current"><a href="files.html"><span>Files</span></a></li>
   </ul></div>
-<h1>/home/jens/Source/TrayAlive/include/PingException.h</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<div class="tabs">
+  <ul>
+    <li><a href="files.html"><span>File&nbsp;List</span></a></li>
+    <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
+  </ul></div>
+<h1>include/PingException.h</h1><a href="PingException_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
 <a name="l00002"></a>00002 <span class="comment">   PingException.h - Exception used in TrayAlive</span>
 <a name="l00003"></a>00003 <span class="comment">   </span>
 <a name="l00004"></a>00004 <span class="comment">   Copyright 2006 Jens Georg</span>
@@ -29,27 +34,27 @@
 <a name="l00016"></a>00016 <span class="comment">   limitations under the License.</span>
 <a name="l00017"></a>00017 <span class="comment">*/</span>
 <a name="l00018"></a>00018 
-<a name="l00019"></a>00019 <span class="preprocessor">#ifndef _PING_EXCEPTION_H</span>
-<a name="l00020"></a>00020 <span class="preprocessor"></span><span class="preprocessor">#define _PING_EXCEPTION_H</span>
-<a name="l00021"></a>00021 <span class="preprocessor"></span>
-<a name="l00022"></a>00022 <span class="preprocessor">#include &lt;exception&gt;</span>
-<a name="l00023"></a>00023 <span class="preprocessor">#include &lt;string&gt;</span>
-<a name="l00024"></a>00024 
-<a name="l00025"></a><a class="code" href="classCPingException.html">00025</a> <span class="keyword">class </span><a class="code" href="classCPingException.html">CPingException</a> : <span class="keyword">public</span> std::exception  
-<a name="l00026"></a>00026 {
-<a name="l00027"></a>00027 <span class="keyword">public</span>:
-<a name="l00033"></a><a class="code" href="classCPingException.html#85bfd7d500b91e254caf22a801f94bc0">00033</a>         <a class="code" href="classCPingException.html#85bfd7d500b91e254caf22a801f94bc0">CPingException</a>(<span class="keyword">const</span> std::string&amp; message) : m_message(message) { };
-<a name="l00034"></a>00034 
-<a name="l00036"></a><a class="code" href="classCPingException.html#aecbf499df32fb832c37c7c79482c31e">00036</a>         <span class="keyword">virtual</span> <a class="code" href="classCPingException.html#aecbf499df32fb832c37c7c79482c31e">~CPingException</a>() throw() {};
-<a name="l00037"></a>00037 
-<a name="l00043"></a><a class="code" href="classCPingException.html#e90d056dbeb3073b0da56f11f3b3e092">00043</a>         <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="classCPingException.html#e90d056dbeb3073b0da56f11f3b3e092">what</a>() const throw() { <span class="keywordflow">return</span> m_message.c_str(); };
-<a name="l00044"></a>00044 <span class="keyword">private</span>:
-<a name="l00045"></a>00045 
-<a name="l00047"></a>00047         std::string m_message;
-<a name="l00048"></a>00048 };
-<a name="l00049"></a>00049 
-<a name="l00050"></a>00050 <span class="preprocessor">#endif</span>
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Wed Dec 27 12:13:47 2006 for TrayAlive by&nbsp;
+<a name="l00020"></a>00020 <span class="preprocessor">#ifndef _PING_EXCEPTION_H</span>
+<a name="l00021"></a>00021 <span class="preprocessor"></span><span class="preprocessor">#define _PING_EXCEPTION_H</span>
+<a name="l00022"></a>00022 <span class="preprocessor"></span>
+<a name="l00023"></a>00023 <span class="preprocessor">#include &lt;exception&gt;</span>
+<a name="l00024"></a>00024 <span class="preprocessor">#include &lt;string&gt;</span>
+<a name="l00025"></a>00025 
+<a name="l00026"></a><a class="code" href="classCPingException.html">00026</a> <span class="keyword">class </span><a class="code" href="classCPingException.html">CPingException</a> : <span class="keyword">public</span> std::exception  
+<a name="l00027"></a>00027 {
+<a name="l00028"></a>00028 <span class="keyword">public</span>:
+<a name="l00034"></a><a class="code" href="classCPingException.html#85bfd7d500b91e254caf22a801f94bc0">00034</a>         <a class="code" href="classCPingException.html#85bfd7d500b91e254caf22a801f94bc0">CPingException</a>(<span class="keyword">const</span> std::string&amp; message) : m_message(message) { };
+<a name="l00035"></a>00035 
+<a name="l00037"></a><a class="code" href="classCPingException.html#aecbf499df32fb832c37c7c79482c31e">00037</a>         <span class="keyword">virtual</span> <a class="code" href="classCPingException.html#aecbf499df32fb832c37c7c79482c31e">~CPingException</a>() throw() {};
+<a name="l00038"></a>00038 
+<a name="l00044"></a><a class="code" href="classCPingException.html#e90d056dbeb3073b0da56f11f3b3e092">00044</a>         <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="classCPingException.html#e90d056dbeb3073b0da56f11f3b3e092">what</a>() const throw() { <span class="keywordflow">return</span> m_message.c_str(); };
+<a name="l00045"></a>00045 <span class="keyword">private</span>:
+<a name="l00046"></a>00046 
+<a name="l00048"></a>00048         std::string m_message;
+<a name="l00049"></a>00049 };
+<a name="l00050"></a>00050 
+<a name="l00051"></a>00051 <span class="preprocessor">#endif</span>
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sun Jan 21 11:33:46 2007 for TrayAlive by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.4.7 </small></address>
 </body>

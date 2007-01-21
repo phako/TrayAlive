@@ -16,6 +16,7 @@
    limitations under the License.
 */
 
+/** @file */
 #define _WIN32_IE 0x0600
 
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers

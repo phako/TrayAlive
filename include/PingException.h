@@ -16,6 +16,7 @@
    limitations under the License.
 */
 
+/** @file */
 #ifndef _PING_EXCEPTION_H
 #define _PING_EXCEPTION_H
 
