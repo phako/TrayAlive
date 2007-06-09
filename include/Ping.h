@@ -25,6 +25,8 @@
 
 #include "PingException.h"
 
+#pragma warning(disable:4290)
+
 class CPing  
 {
 public:

@@ -18,6 +18,8 @@
 /** @file */
 #define _WIN32_IE 0x0600
 
+#pragma warning(disable:4290)
+
 #include <windows.h>
 #include <shellapi.h>
 
