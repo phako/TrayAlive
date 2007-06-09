@@ -38,3 +38,12 @@ IpPacket::IpPacket(const char* rawPacket, const unsigned int size)
 	m_size = size;
 	m_payloadSize = ntohs(m_ip_packet->header.total_length) - (m_ip_packet->header.h_len * 4);
 }
+
+IpPacket::~IpPacket()
+{
+	if (m_buffer != 0)
+	{
+		delete[] m_buffer;
+		m_buffer = 0;
+	}
+}

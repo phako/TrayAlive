@@ -44,6 +44,11 @@ class IpPacket
 		IpPacket(const char* rawPacket, const unsigned int size);
 
 		/**
+		 * Destructor.
+		 */
+		virtual ~IpPacket();
+
+		/**
 		 * Get a const pointer to the payload of the IP packet.
 		 *
 		 * @return a const char pointer pointing to the beginning of
