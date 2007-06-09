@@ -86,7 +86,9 @@ LRESULT CALLBACK MyWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			}
 			catch (const TrayIconException& e)
 			{
-				MessageBox(NULL, "Failed to remove tray icon", "Error", MB_OK);
+				std::string s("Failed to remove tray icon: ");
+				s += e.what();
+				MessageBox(NULL, s.c_str(), "Error", MB_OK);
 			}
 			DestroyWindow(hWnd);
 			return 0;
@@ -122,7 +124,9 @@ LRESULT CALLBACK MyWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		catch (const TrayIconException& e)
 		{
-			MessageBox(NULL, "Failed to change status icon", "Error", MB_OK);
+			std::string s("Failed to change status icon: ");
+			s +=e.what();
+			MessageBox(NULL, s.c_str(), "Error", MB_OK);
 		}
 		return 0;
 	case WM_USER + 0x5000:
