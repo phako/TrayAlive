@@ -241,7 +241,7 @@ void CPing::pingThread()
 			// Check if host is reachable
 			if (ping())
 			{
-				OutputDebugString("Up\r\n");
+				//OutputDebugString("Up\r\n");
 				if (m_bDownSignalled)
 				{
 					fireUp();
@@ -251,7 +251,7 @@ void CPing::pingThread()
 			}
 			else
 			{
-				OutputDebugString("Down\r\n");
+				//OutputDebugString("Down\r\n");
 				m_uFailedPings++;
 				if (m_uFailedPings > m_uUnreachableThreshold && !m_bDownSignalled)
 				{
@@ -301,10 +301,11 @@ bool CPing::ping()
 	do 
 	{
 		nResult = select(1, &fds, NULL, NULL, &tvTimeout);
-		OutputDebugString("After select\r\n");
-
 		if (nResult != 1)
 		{
+			char buf[255] = {0};
+			sprintf(buf, "Select failed with error: %d", nResult);
+			OutputDebugString(buf);
 			return false;
 		}
 
@@ -313,7 +314,7 @@ bool CPing::ping()
 			(char *)m_pReplyBuffer, IpPacket::MAX_PACKET_SIZE, 0,
 			(sockaddr *)&sa, &size);
 
-		OutputDebugString("After recvfrom\r\n");
+		//OutputDebugString("After recvfrom\r\n");
 		if (SOCKET_ERROR == nResult)
 		{
 			nResult = WSAGetLastError();
@@ -327,12 +328,10 @@ bool CPing::ping()
 
 		responsePacket = new IpPacket(m_pReplyBuffer, nResult);
 
-		//pIpHeader = (ip_header *) m_pReplyBuffer;
 		if (response != NULL)
 		{
 			delete response;
 		}
-		//response = new IcmpPacket((m_pReplyBuffer + pIpHeader->h_len * 4), pIpHeader->total_length - (pIpHeader->h_len * 4));
 		response = new IcmpPacket(responsePacket->getPayload(), responsePacket->getPayloadSize());
 
 		// check sequence number
