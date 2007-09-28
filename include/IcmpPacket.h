@@ -23,11 +23,17 @@
 
 #include "inttypes.h"
 
+/**
+ * Class representation of an ICMP packet
+ */
 class IcmpPacket
 {
 	private:
 		// private copy constructor
 		IcmpPacket(IcmpPacket& p) {};
+
+		// private assignment operator
+		const IcmpPacket& operator=(const IcmpPacket& p) {};
 	public:
 
 		enum {
